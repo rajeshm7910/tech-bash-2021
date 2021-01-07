@@ -1,0 +1,103 @@
+#  Copyright 2020 Google LLC
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+steps:
+  # Step 0: Install node dependencies for linting and testing
+- name: node
+  entrypoint: npm
+  args:
+    - "install"
+  # Step 1: Run static code analysis and linting
+- name: node
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |-
+      npm run apigeelint | tee report.apigeelint.html && \
+      if [ ${PIPESTATUS[0]} -ne "0" ]; then exit -1; fi && \
+      npm run eslint | tee report.eslint.html && \
+      if [ ${PIPESTATUS[0]} -ne "0" ]; then exit -1; fi
+  # Step 2: Run unit tests for custom policy impementations
+- name: node
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - "npm run unit-test"
+  # Step 3: Get the access token for the cloud run service account
+  #         and set branch specific config parameters
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |-
+      # Config based on branch name
+      if [ "$BRANCH_NAME" = "main" ]
+      then
+        echo "APIGEE_BUILD_PROFILE=test" >> env.txt
+        echo "APIGEE_BUILD_DEPLOYMENT_SUFFIX=''" >> env.txt
+      elif [ "$BRANCH_NAME" = "prod" ]
+      then
+        echo "APIGEE_BUILD_PROFILE=prod" >> env.txt
+        echo "APIGEE_BUILD_DEPLOYMENT_SUFFIX=''" >> env.txt
+      else
+        BRANCH_NAME=${BRANCH_NAME:='ad-hoc'}
+        echo "APIGEE_BUILD_PROFILE=test" >> env.txt
+        echo "APIGEE_BUILD_DEPLOYMENT_SUFFIX=\"$(echo $BRANCH_NAME | \
+        sed "s/[^A-Za-z0-9]/-/g")\"" >> env.txt
+      fi
+
+      # Cloud run service account token for Apigee deployment
+      echo "APIGEE_BUILD_TOKEN=\"$(gcloud auth application-default print-access-token)\"" >> env.txt
+
+      echo "[BUILD CONFIG]"
+      cat env.txt | sed "s/APIGEE_BUILD_TOKEN=.*/APIGEE_BUILD_TOKEN=[hidden]/g"
+
+  # Step 4: Deploy using the access token from before
+- name: "gcr.io/cloud-builders/mvn"
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |-
+      source env.txt && \
+      mvn -f ./pom-hybrid.xml clean install -P$${APIGEE_BUILD_PROFILE} \
+        -Dbearer=$${APIGEE_BUILD_TOKEN} \
+        -Dorg=${PROJECT_ID} \
+        -Ddeployment.suffix=$${APIGEE_BUILD_DEPLOYMENT_SUFFIX} \
+        -Ddeployment.description="CloudRun Build: $BUILD_ID"
+  # Step 5: Run integration tests
+- name: node
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |-
+      npm run integration-test | tee report.e2e.html && \
+      if [ ${PIPESTATUS[0]} -ne "0" ]; then exit -1; fi
+  env:
+    - "TEST_HOST=$_INT_TEST_HOST"
+    - "TEST_BASE_PATH=$_INT_TEST_BASE_PATH"
+  # Step 6: Copy coverage reports and other deployment artifacts to a storage bucket
+- name: "gcr.io/cloud-builders/gsutil"
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |-
+      gsutil cp -r coverage* \
+      gs://${PROJECT_ID}_cloudbuild/reports/$BUILD_ID/coverage && \
+      gsutil cp ./report.*.html \
+      gs://${PROJECT_ID}_cloudbuild/reports/$BUILD_ID
+substitutions:
+  # Host name for the integration test
+  _INT_TEST_HOST: org-env.apigee.net
+  # Base path for the integration test
+  _INT_TEST_BASE_PATH: /airports-cicd/v1
