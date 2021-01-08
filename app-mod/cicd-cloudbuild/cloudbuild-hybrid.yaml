@@ -47,7 +47,7 @@ steps:
     - "-c"
     - |-
       source env.txt && \
-      mvn -f ./pom-hybrid.xml clean install -P$${APIGEE_BUILD_PROFILE} \
+      mvn -f pom-hybrid.xml clean install -P$${APIGEE_BUILD_PROFILE} \
         -Dbearer=$${APIGEE_BUILD_TOKEN} \
         -Dorg=${PROJECT_ID} \
         -Ddeployment.suffix=$${APIGEE_BUILD_DEPLOYMENT_SUFFIX} \
