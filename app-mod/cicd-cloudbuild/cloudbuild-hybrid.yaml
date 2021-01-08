@@ -31,4 +31,4 @@ steps:
     - |
       # Read environment variables from disk
       source /workspace/build_vars &&
-      mvn -f cloudbuild-pom.xml -ntp clean install -P${build_profile} -Dorg=$PROJECT_ID -Ddeployment.suffix=${build_prefix} -Dbearer=${build_token} 
+      mvn -f /workspace/app-mod/cicd-cloudbuild/cloudbuild-pom.xml -ntp clean install -P${build_profile} -Dorg=$PROJECT_ID -Ddeployment.suffix=${build_prefix} -Dbearer=${build_token} 
