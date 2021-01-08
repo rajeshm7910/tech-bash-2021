@@ -16,9 +16,6 @@
             <Step>
                 <Name>AMSetXMLMsg</Name>
             </Step>
-            <Step>
-                <Name>XMLtoJSON</Name>
-            </Step>
         </Response>
     </PreFlow>
     <Flows/>
