@@ -13,29 +13,6 @@
 #  limitations under the License.
 
 steps:
-  # Step 0: Install node dependencies for linting and testing
-- name: node
-  entrypoint: npm
-  args:
-    - "install"
-  # Step 1: Run static code analysis and linting
-- name: node
-  entrypoint: "bash"
-  args:
-    - "-c"
-    - |-
-      npm run apigeelint | tee report.apigeelint.html && \
-      if [ ${PIPESTATUS[0]} -ne "0" ]; then exit -1; fi && \
-      npm run eslint | tee report.eslint.html && \
-      if [ ${PIPESTATUS[0]} -ne "0" ]; then exit -1; fi
-  # Step 2: Run unit tests for custom policy impementations
-- name: node
-  entrypoint: "bash"
-  args:
-    - "-c"
-    - "npm run unit-test"
-  # Step 3: Get the access token for the cloud run service account
-  #         and set branch specific config parameters
 - name: gcr.io/cloud-builders/gcloud
   entrypoint: "bash"
   args:
@@ -75,27 +52,6 @@ steps:
         -Dorg=${PROJECT_ID} \
         -Ddeployment.suffix=$${APIGEE_BUILD_DEPLOYMENT_SUFFIX} \
         -Ddeployment.description="CloudRun Build: $BUILD_ID"
-  # Step 5: Run integration tests
-- name: node
-  entrypoint: "bash"
-  args:
-    - "-c"
-    - |-
-      npm run integration-test | tee report.e2e.html && \
-      if [ ${PIPESTATUS[0]} -ne "0" ]; then exit -1; fi
-  env:
-    - "TEST_HOST=$_INT_TEST_HOST"
-    - "TEST_BASE_PATH=$_INT_TEST_BASE_PATH"
-  # Step 6: Copy coverage reports and other deployment artifacts to a storage bucket
-- name: "gcr.io/cloud-builders/gsutil"
-  entrypoint: "bash"
-  args:
-    - "-c"
-    - |-
-      gsutil cp -r coverage* \
-      gs://${PROJECT_ID}_cloudbuild/reports/$BUILD_ID/coverage && \
-      gsutil cp ./report.*.html \
-      gs://${PROJECT_ID}_cloudbuild/reports/$BUILD_ID
 substitutions:
   # Host name for the integration test
   _INT_TEST_HOST: org-env.apigee.net
