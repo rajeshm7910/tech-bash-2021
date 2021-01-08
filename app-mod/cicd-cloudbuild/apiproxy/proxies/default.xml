@@ -25,6 +25,6 @@
         <TargetEndpoint>legacy</TargetEndpoint>
     </RouteRule>
     <RouteRule name="default">
-        <TargetEndpoint>paylater-on-cloud</TargetEndpoint>
+        <TargetEndpoint>loans-microservice</TargetEndpoint>
     </RouteRule>
 </ProxyEndpoint>
