@@ -1,0 +1,16 @@
+{
+  "name": "loans-v1",
+  "version": "1.0.0",
+  "description": "Sample Microservices for loans-v1 ",
+  "author": "rajeshmi",
+  "license": "Apache-2.0",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "devDependencies": {
+    "express": "^4.17.1"
+  }
+}
