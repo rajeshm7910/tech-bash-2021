@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<XSL async="false" continueOnError="false" enabled="true" name="XSLRemoveSoapEnvelope">
+    <DisplayName>XSL.RemoveSoapEnvelope</DisplayName>
+    <Properties/>
+    <Source>response</Source>
+    <ResourceURL>xsl://RemoveSoapEnv.xsl</ResourceURL>
+    <Parameters ignoreUnresolvedVariables="true"/>
+    <OutputVariable>shortenedResponse</OutputVariable>
+</XSL>

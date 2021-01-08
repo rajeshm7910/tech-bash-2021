@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM.SetTargetURL">
+    <AssignVariable>
+        <Name>target.url</Name>
+        <!--<Ref>if-declared-in-proxy-endpoint</Ref>-->
+        <Value>https://paylater-core-dot-apigee-paylater.appspot.com/v1/paylater/123/loan/offer</Value>
+    </AssignVariable>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <AssignTo createNew="false" transport="http" type="request"/>
+</AssignMessage>

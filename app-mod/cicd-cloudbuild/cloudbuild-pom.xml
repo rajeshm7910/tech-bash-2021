@@ -19,9 +19,9 @@ limitations under the License.
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>apigee-devrel</groupId>
-	<artifactId>airports-cicd</artifactId>
+	<artifactId>loans</artifactId>
 	<version>v1</version>
-	<name>airports-cicd${deployment.suffix}</name>
+	<name>loans-${deployment.suffix}v1</name>
 	<packaging>pom</packaging>
 	<pluginRepositories>
 		<pluginRepository>
@@ -89,7 +89,6 @@ limitations under the License.
 		</pluginManagement>
 
 		<plugins>
-
 			<!-- copy the full apiproxy folder to target folder -->
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -135,22 +134,29 @@ limitations under the License.
 				<configuration>
 					<basedir>${target.root.dir}</basedir>
 					<includes>
-						<include>test/integration/support/init.js</include>
-						<include>apiproxy/airports-cicd-v1.xml</include>
 						<include>apiproxy/proxies/default.xml</include>
+						<include>apiproxy/loans-v1.xml</include>
 					</includes>
 					<replacements>
 						<replacement>
-							<token>org-env.apigee.net</token>
-							<value>${apigee.org}-${apigee.env}.apigee.net</value>
+							<token>/loans/v1</token>
+							<value>/loans/${deployment.suffix}v1</value>
 						</replacement>
 						<replacement>
-							<token>/airports-cicd/v1</token>
-							<value>/airports-cicd${deployment.suffix}/v1</value>
+							<token>demo-test.apigee.net</token>
+							<value>${api.northbound.domain}</value>
 						</replacement>
 						<replacement>
 							<token>@description</token>
-							<value>${deployment.description}</value>
+							<value>commit ${commit} from ${branch} branch. Deployed by ${user.name}</value>
+						</replacement>
+						<replacement>
+							<token>env-name</token>
+							<value>${apigee.env}</value>
+						</replacement>
+						<replacement>
+							<token>proxy-name</token>
+							<value>loans-${deployment.suffix}v1</value>
 						</replacement>
 					</replacements>
 				</configuration>

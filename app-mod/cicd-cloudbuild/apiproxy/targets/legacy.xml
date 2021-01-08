@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TargetEndpoint name="legacy">
+    <PreFlow name="PreFlow">
+        <Request>
+            <Step>
+                <Name>GetCredentials</Name>
+            </Step>
+            <Step>
+                <Name>BA.Encode-Credentials</Name>
+            </Step>
+        </Request>
+        <Response>
+            <Step>
+                <Name>XSLRemoveSoapEnvelope</Name>
+            </Step>
+            <Step>
+                <Name>AMSetXMLMsg</Name>
+            </Step>
+            <Step>
+                <Name>XMLtoJSON</Name>
+            </Step>
+        </Response>
+    </PreFlow>
+    <Flows/>
+    <PostFlow name="PostFlow">
+        <Request/>
+        <Response/>
+    </PostFlow>
+    <HTTPTargetConnection>
+        <URL>https://demo8-test.apigee.net/LendingService-XReP/SOAP/GetOffer</URL>
+    </HTTPTargetConnection>
+</TargetEndpoint>

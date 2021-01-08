@@ -1,0 +1,30 @@
+<APIProxy revision="2" name="loans-v1">
+    <DisplayName>loans-v1</DisplayName>
+    <Description></Description>
+    <CreatedAt>1610089045200</CreatedAt>
+    <LastModifiedAt>1610089045200</LastModifiedAt>
+    <BasePaths>/loans/v1</BasePaths>
+    <Policies>
+        <Policy>BA.Encode-Credentials</Policy>
+        <Policy>AM.RemoveAPIKeyParam</Policy>
+        <Policy>XMLtoJSON</Policy>
+        <Policy>XSLRemoveSoapEnvelope</Policy>
+        <Policy>AM.SetTargetURL</Policy>
+        <Policy>Verify-API-Key</Policy>
+        <Policy>AM.Drop-Path-Suffix</Policy>
+        <Policy>Spike-Arrest</Policy>
+        <Policy>AMSetXMLMsg</Policy>
+        <Policy>GetCredentials</Policy>
+    </Policies>
+    <ProxyEndpoints>
+        <ProxyEndpoint>default</ProxyEndpoint>
+    </ProxyEndpoints>
+    <Resources>
+        <Resource>xsl://RemoveSoapEnv.xsl</Resource>
+    </Resources>
+    <TargetServers></TargetServers>
+    <TargetEndpoints>
+        <TargetEndpoint>paylater-on-cloud</TargetEndpoint>
+        <TargetEndpoint>legacy</TargetEndpoint>
+    </TargetEndpoints>
+</APIProxy>

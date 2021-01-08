@@ -10,16 +10,18 @@ steps:
       if [ "$BRANCH_NAME" = "main" ]
       then
         export build_profile="test"
+        export build_path="/workspace/app-mod/cicd-cloudbuild"
       elif [ "$BRANCH_NAME" = "prod" ]
       then
         export build_profile="prod"
+        export build_path="/workspace/app-mod/cicd-cloudbuild"
       else
         export build_profile="test"
+        export build_path="."
       fi
 
       export build_prefix="" 
       export build_token=$(gcloud auth application-default print-access-token)
-
 
       # write all "build_" variables to the persistent volume "/workspace"
       env | grep "^build_" > /workspace/build_vars
@@ -31,4 +33,4 @@ steps:
     - |
       # Read environment variables from disk
       source /workspace/build_vars &&
-      mvn -f /workspace/app-mod/cicd-cloudbuild/cloudbuild-pom.xml -ntp clean install -P${build_profile} -Dorg=$PROJECT_ID -Ddeployment.suffix=${build_prefix} -Dbearer=${build_token} 
+      mvn -f ${build_path}/cloudbuild-pom.xml -ntp clean install -P${build_profile} -Dorg=$PROJECT_ID -Ddeployment.suffix=${build_prefix} -Dbearer=${build_token} 
