@@ -13,6 +13,6 @@
     <Flows/>
     <HTTPTargetConnection>
         <Properties/>
-        <URL>https://demo8-test.apigee.net/LendingService-XReP/SOAP/GetOffer</URL>
+        <URL>http://loans.default.svc.cluster.local</URL>
     </HTTPTargetConnection>
 </TargetEndpoint>
